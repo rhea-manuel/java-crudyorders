@@ -10,6 +10,7 @@ import java.util.Set;
 
 @Entity
 @Table (name = "customers")
+@JsonIgnoreProperties({"hasOpeningAmt", "hasReceiveAmt", "hasPaymentAmt", "hasOutstandingAmt"})
 public class Customer {
     @Id
     @GeneratedValue (strategy = GenerationType.AUTO)
@@ -27,14 +28,27 @@ public class Customer {
     private String workingarea;
     private String custcountry;
     private String grade;
+
     private double openingamt;
+    @Transient
+    public boolean hasOpeningAmt = false;
+
     private double receiveamt;
+    @Transient
+    public boolean hasReceiveAmt = false;
+
     private double paymentamt;
+    @Transient
+    public boolean hasPaymentAmt = false;
+
     private double outstandingamt;
+    @Transient
+    public boolean hasOutstandingAmt = false;
+
     private String phone;
 
     @ManyToOne
-    @JoinColumn (name = "agentcode", nullable = false)
+    @JoinColumn (name = "agentcode")
     @JsonIgnoreProperties(value = "customers", allowSetters = true)
     private Agent agent;
 
@@ -111,19 +125,17 @@ public class Customer {
         this.grade = grade;
     }
 
-    public double getOpeningamt() {
-        return openingamt;
-    }
+    public double getOpeningamt() { return openingamt; }
 
     public void setOpeningamt(double openingamt) {
+        hasOpeningAmt = true;
         this.openingamt = openingamt;
     }
 
-    public double getReceiveamt() {
-        return receiveamt;
-    }
+    public double getReceiveamt() { return receiveamt; }
 
     public void setReceiveamt(double receiveamt) {
+        hasReceiveAmt = true;
         this.receiveamt = receiveamt;
     }
 
@@ -132,6 +144,7 @@ public class Customer {
     }
 
     public void setPaymentamt(double paymentamt) {
+        hasPaymentAmt = true;
         this.paymentamt = paymentamt;
     }
 
@@ -140,6 +153,7 @@ public class Customer {
     }
 
     public void setOutstandingamt(double outstandingamt) {
+        hasOutstandingAmt = true;
         this.outstandingamt = outstandingamt;
     }
 

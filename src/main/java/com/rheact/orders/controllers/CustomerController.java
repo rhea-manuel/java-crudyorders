@@ -4,13 +4,14 @@ import com.rheact.orders.models.Customer;
 import com.rheact.orders.services.CustomerServices;
 import com.rheact.orders.views.OrderCounts;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -43,4 +44,41 @@ public class CustomerController {
         List<OrderCounts> counts = customerService.orderCounts();
         return new ResponseEntity<>(counts, HttpStatus.OK);
     }
+
+    @DeleteMapping(value = "/customer/{id}", produces = "application/json")
+    public ResponseEntity<?> deleteCustomer(@PathVariable long id){
+        customerService.delete(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping(value = "/customer/{id}", consumes = "application/json")
+    public ResponseEntity<?> updateCustomer(@PathVariable long id, @RequestBody Customer updatedInfo){
+        customerService.update(updatedInfo, id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/customer/{id}", consumes = "application/json")
+    public ResponseEntity<?> replaceCustomer(@PathVariable long id, @RequestBody @Valid Customer updatedCustomer){
+        updatedCustomer.setCustcode(id);
+        Customer c = customerService.save(updatedCustomer);
+        return new ResponseEntity<>(c, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/customer", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<?> addCustomer(@RequestBody @Valid Customer toAdd){
+//        System.out.println(toAdd);
+        toAdd.setCustcode(0);
+        toAdd = customerService.save(toAdd);
+
+        HttpHeaders responseHeaders =  new HttpHeaders();
+        URI toAddURI = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(toAdd.getCustcode())
+                .toUri();
+
+        responseHeaders.setLocation(toAddURI);
+
+        return new ResponseEntity<>(toAdd, responseHeaders, HttpStatus.CREATED);
+    }
+
 }

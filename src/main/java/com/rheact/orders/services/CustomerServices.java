@@ -11,4 +11,8 @@ public interface CustomerServices {
     List<Customer> findByName(String name);
 
     List<OrderCounts> orderCounts();
+    void delete(long id);
+    Customer update (Customer toUpdate, long id); //Patch vs. Put request
+    void deleteAll(); //Only for SeedData
+    Customer save(Customer customer);
 }

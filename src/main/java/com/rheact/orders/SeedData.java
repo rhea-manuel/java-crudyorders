@@ -8,6 +8,7 @@ import com.rheact.orders.repositories.AgentsRepository;
 import com.rheact.orders.repositories.CustomersRepository;
 import com.rheact.orders.repositories.OrdersRepository;
 import com.rheact.orders.repositories.PaymentRepository;
+import com.rheact.orders.services.CustomerServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -51,6 +52,9 @@ public class SeedData
      */
     private Random random = new Random();
 
+    @Autowired
+    private CustomerServices customerService;
+
     /**
      * Generates test, seed data for our application
      * First a set of known data is seeded into our database.
@@ -64,6 +68,8 @@ public class SeedData
     @Override
     public void run(String[] args) throws
             Exception {
+
+        customerService.deleteAll();
         Payment pay1 = new Payment("Cash");
         Payment pay2 = new Payment("Gift Card");
         Payment pay3 = new Payment("Credit Card");
